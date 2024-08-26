@@ -1,33 +1,51 @@
-// Función para agregar un producto al inventario
-function agregarProducto(inventario, producto, cantidad) {
-    inventario[producto] = cantidad;
-    console.log(`Producto agregado: ${producto} con cantidad ${cantidad}`);
+// Obtener referencias a los elementos del DOM
+const form = document.getElementById('producto-form');
+const productoInput = document.getElementById('producto');
+const cantidadInput = document.getElementById('cantidad');
+const inventarioLista = document.getElementById('inventario-lista');
+
+// Función para cargar el inventario desde localStorage
+function cargarInventario() {
+    let inventario = localStorage.getItem('inventario');
+    return inventario ? JSON.parse(inventario) : {};
 }
 
-// Función para actualizar la cantidad de un producto existente en el inventario
-function actualizarProducto(inventario, producto, cantidad) {
-    if (producto in inventario) {
+// Función para guardar el inventario en localStorage
+function guardarInventario(inventario) {
+    localStorage.setItem('inventario', JSON.stringify(inventario));
+}
+
+// Función para agregar o actualizar un producto en el inventario
+function agregarOActualizarProducto(event) {
+    event.preventDefault();
+
+    let inventario = cargarInventario();
+    const producto = productoInput.value.trim();
+    const cantidad = parseInt(cantidadInput.value.trim());
+
+    if (producto && !isNaN(cantidad)) {
         inventario[producto] = cantidad;
-        console.log(`Producto actualizado: ${producto} con nueva cantidad ${cantidad}`);
-    } else {
-        console.log(`El producto ${producto} no existe en el inventario`);
+        guardarInventario(inventario);
+        mostrarInventario();
+        form.reset();
+        console.log(`Producto agregado/actualizado: ${producto} con cantidad ${cantidad}`);
     }
 }
 
-// Función para mostrar el inventario actual
-function mostrarInventario(inventario) {
-    console.log("Inventario actual:");
+// Función para mostrar el inventario actual en la lista HTML
+function mostrarInventario() {
+    let inventario = cargarInventario();
+    inventarioLista.innerHTML = '';
+
     for (let producto in inventario) {
-        console.log(`${producto}: ${inventario[producto]}`);
+        let item = document.createElement('li');
+        item.textContent = `${producto}: ${inventario[producto]}`;
+        inventarioLista.appendChild(item);
     }
 }
 
-// Crear un inventario vacío
-let inventario = {};
+// Evento para manejar el formulario de agregar/actualizar producto
+form.addEventListener('submit', agregarOActualizarProducto);
 
-// Llamadas a las funciones
-agregarProducto(inventario, "Manzanas", 50);
-agregarProducto(inventario, "Naranjas", 30);
-actualizarProducto(inventario, "Manzanas", 75);
-actualizarProducto(inventario, "Peras", 20);
-mostrarInventario(inventario);
+// Mostrar el inventario al cargar la página
+mostrarInventario();
