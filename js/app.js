@@ -1,51 +1,74 @@
-// Obtener referencias a los elementos del DOM
-const form = document.getElementById('producto-form');
-const productoInput = document.getElementById('producto');
-const cantidadInput = document.getElementById('cantidad');
-const inventarioLista = document.getElementById('inventario-lista');
+// js/app.js
 
-// Función para cargar el inventario desde localStorage
-function cargarInventario() {
-    let inventario = localStorage.getItem('inventario');
-    return inventario ? JSON.parse(inventario) : {};
-}
+document.addEventListener('DOMContentLoaded', () => {
+    fetchProducts();
+    loadCart();
+    setupEventListeners();
+});
 
-// Función para guardar el inventario en localStorage
-function guardarInventario(inventario) {
-    localStorage.setItem('inventario', JSON.stringify(inventario));
-}
-
-// Función para agregar o actualizar un producto en el inventario
-function agregarOActualizarProducto(event) {
-    event.preventDefault();
-
-    let inventario = cargarInventario();
-    const producto = productoInput.value.trim();
-    const cantidad = parseInt(cantidadInput.value.trim());
-
-    if (producto && !isNaN(cantidad)) {
-        inventario[producto] = cantidad;
-        guardarInventario(inventario);
-        mostrarInventario();
-        form.reset();
-        console.log(`Producto agregado/actualizado: ${producto} con cantidad ${cantidad}`);
+// Función para obtener y mostrar los productos
+async function fetchProducts() {
+    try {
+        const response = await fetch('js/data.json');
+        if (!response.ok) {
+            throw new Error('Error al cargar los productos');
+        }
+        const productos = await response.json();
+        displayProducts(productos);
+    } catch (error) {
+        showError('No se pudieron cargar los productos. Por favor, intenta nuevamente más tarde.');
+        console.error(error);
     }
 }
 
-// Función para mostrar el inventario actual en la lista HTML
-function mostrarInventario() {
-    let inventario = cargarInventario();
-    inventarioLista.innerHTML = '';
+// Función para mostrar los productos en el DOM
+function displayProducts(productos) {
+    const productosContainer = document.getElementById('productos-container');
+    productosContainer.innerHTML = '';
 
-    for (let producto in inventario) {
-        let item = document.createElement('li');
-        item.textContent = `${producto}: ${inventario[producto]}`;
-        inventarioLista.appendChild(item);
-    }
+    productos.forEach(producto => {
+        const productoHTML = `
+            <div class="producto-card">
+                <img src="${producto.imagen}" alt="${producto.nombre}">
+                <h3>${producto.nombre}</h3>
+                <p>${producto.descripcion}</p>
+                <p><strong>Precio: $${producto.precio.toFixed(2)}</strong></p>
+                <button data-id="${producto.id}">Agregar al Carrito</button>
+            </div>
+        `;
+        productosContainer.insertAdjacentHTML('beforeend', productoHTML);
+    });
+
+    // Agregar eventos a los botones de agregar al carrito
+    const botonesAgregar = document.querySelectorAll('.producto-card button');
+    botonesAgregar.forEach(boton => {
+        boton.addEventListener('click', agregarAlCarrito);
+    });
 }
 
-// Evento para manejar el formulario de agregar/actualizar producto
-form.addEventListener('submit', agregarOActualizarProducto);
+// Función para mostrar mensajes de error usando SweetAlert2
+function showError(message) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: message
+    });
+}
 
-// Mostrar el inventario al cargar la página
-mostrarInventario();
+// Función para mostrar mensajes de éxito usando SweetAlert2
+function showSuccess(message) {
+    Swal.fire({
+        icon: 'success',
+        title: '¡Éxito!',
+        text: message,
+        timer: 2000,
+        showConfirmButton: false
+    });
+}
+
+// Función para agregar productos al carrito
+function agregarAlCarrito(event) {
+    const productoId = parseInt(event.target.getAttribute('data-id'));
+    agregarProductoAlCarrito(productoId);
+    showSuccess('Producto agregado al carrito');
+}

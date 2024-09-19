@@ -1,0 +1,37 @@
+[
+    {
+        "id": 1,
+        "nombre": "Camiseta Deportiva",
+        "descripcion": "Camiseta de alta calidad para actividades deportivas.",
+        "precio": 19.99,
+        "imagen": "assets/images/camiseta.jpg"
+    },
+    {
+        "id": 2,
+        "nombre": "Pantalones de Yoga",
+        "descripcion": "Pantalones cómodos y elásticos para yoga y pilates.",
+        "precio": 29.99,
+        "imagen": "assets/images/pantalones.jpg"
+    },
+    {
+        "id": 3,
+        "nombre": "Zapatillas de Running",
+        "descripcion": "Zapatillas ligeras y duraderas para correr largas distancias.",
+        "precio": 49.99,
+        "imagen": "assets/images/zapatillas.jpg"
+    },
+    {
+        "id": 4,
+        "nombre": "Sudadera con Capucha",
+        "descripcion": "Sudadera suave con capucha para tus días fríos.",
+        "precio": 39.99,
+        "imagen": "assets/images/sudadera.jpg"
+    },
+    {
+        "id": 5,
+        "nombre": "Gorra de Visera",
+        "descripcion": "Gorra ajustable para protegerte del sol.",
+        "precio": 14.99,
+        "imagen": "assets/images/gorra.jpg"
+    }
+]
